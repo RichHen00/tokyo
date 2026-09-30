@@ -1,0 +1,233 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  background: #fff;
+  color: #000;
+}
+
+body {
+  font-family: "Roboto Condensed", "Arial Narrow", Arial, sans-serif;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.text {
+  max-width: 1050px;
+  margin: 0 auto;
+  padding: clamp(28px, 5vw, 72px);
+  padding-top: 0;
+}
+
+/* Two different effects, so two different opacities.
+   .temp  the single dimmed glyph at the tip of a line mid-type (anim.html)
+   .decode the whole unresolved remainder of a line, scrambled at once
+           (3.html) — this dims a run of noise, not one glyph            */
+.temp { opacity: 0.25; }
+.decode { opacity: 0.4; }
+
+.text .eyebrow {
+  margin: 0 0 26px;
+  font-size: 16px;
+  line-height: 1.2;
+}
+.text .title {
+  margin: 0;
+  font-size: clamp(36px, 7.2vw, 40px);
+  line-height: 1.02;
+  font-weight: 400;
+}
+.text .intro {
+  max-width: calc(800px + 4.5%);
+  margin: 34px 0 0;
+  font-size: 18px;
+  line-height: 1.42;
+  font-weight: 300;
+}
+.text .copy {
+  max-width: 800px;
+  margin: 36px 0 0 4.5%;
+}
+.text .copy p {
+  margin: 0 0 10px;
+  font-size: 16px;
+  line-height: 1.62;
+}
+.text .copy p:last-child { margin-bottom: 0; }
+.text .source {
+  margin-top: 20px;
+  font-size: 16px;
+}
+
+/* Trailing caret, only on the h1. */
+.cursor::after {
+  content: "_";
+  animation: blink 1s steps(1, end) infinite;
+}
+/* animation:none is not enough here: a running keyframe outranks the
+   opacity declaration, so the caret would blink forever.                */
+.cursor.done::after {
+  animation: none;
+  opacity: 0;
+  transition: opacity 500ms ease;
+}
+@keyframes blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cursor::after { animation: none; }
+}
+
+/* ── Media strip (2 photos or 1 video) ─────────────────────────────────── */
+.text .media {
+  display: flex;
+  gap: 16px;
+  margin: 36px 0 0 4.5%;
+  max-width: 800px;
+}
+
+/* Each frame is a fixed-ratio crop box */
+.media__frame {
+  flex: 1 1 0;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: #111;
+}
+
+/* object-fit: cover  → shortest side fills the container,
+   no letterboxing, no distortion                           */
+.media__frame img,
+.media__frame video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Single-item layout (1 video): full width, wider ratio */
+.media--single .media__frame {
+  aspect-ratio: 16 / 9;
+}
+
+/* ── Archive ────────────────────────────────────────────────────────────
+   .archive-btn is shared: on the live page it is the <button> that opens the
+   overlay, on an archived page in pages/ it is the <a> back to the live page.
+   Trigger colours are for the white page; the overlay itself is dark.        */
+.text .archive-btn {
+  display: inline-block;
+  margin: 20px 0 20px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: rgba(0, 0, 0, 0.55);
+  font-family: inherit;
+  font-size: clamp(12px, 1vw, 14px);
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+}
+.text .archive-btn:hover { color: #000; }
+.text .archive-btn:focus-visible {
+  outline: 1px solid rgba(0, 0, 0, 0.5);
+  outline-offset: 6px;
+}
+body.is-locked { overflow: hidden; }
+
+.archive {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 20;
+  display: none;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  background: rgba(9, 9, 9, 0.92);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+}
+.archive.is-open { display: block; }
+.archive-inner {
+  width: min(100%, 860px);
+  margin: 0 auto;
+  padding: clamp(30px, 6vw, 72px) clamp(24px, 5vw, 48px);
+}
+.archive-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 24px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+}
+.archive-title,
+.archive-close {
+  color: rgba(255, 255, 255, 0.72);
+  font-family: inherit;
+  font-size: clamp(12px, 1vw, 14px);
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.archive-close {
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+.archive-close:hover { color: #fff; }
+.archive-close:focus-visible {
+  outline: 1px solid rgba(255, 255, 255, 0.7);
+  outline-offset: 6px;
+}
+.archive-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.archive-list li {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.archive-list a {
+  display: flex;
+  gap: 18px;
+  padding: 16px 0;
+  color: #fff;
+  text-decoration: none;
+  font-size: clamp(15px, 1.4vw, 18px);
+  line-height: 1.35;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+}
+.archive-list a:hover .archive-eyebrow { text-decoration: underline; }
+.archive-list a:focus-visible {
+  outline: 1px solid rgba(255, 255, 255, 0.6);
+  outline-offset: 4px;
+}
+.archive-num {
+  flex: 0 0 auto;
+  min-width: 2.4em;
+  color: rgba(255, 255, 255, 0.5);
+  font-variant-numeric: tabular-nums;
+}
+.archive-empty,
+.archive-error {
+  margin: 22px 0 0;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: clamp(14px, 1.3vw, 16px);
+}
+.archive-error { color: rgba(255, 255, 255, 0.72); }
+
+@media (max-width: 640px) {
+  .text .copy { margin-left: 0; }
+  .text .media { flex-direction: column; margin-left: 0; }
+  .media__frame { flex: none; width: 100%; }
+  .text .archive-btn {
+    margin-top: 10px;
+    margin-bottom: 20px;
+  }
+}
